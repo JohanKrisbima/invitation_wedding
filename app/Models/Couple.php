@@ -13,10 +13,12 @@ class Couple extends Model
     protected $fillable = [
         'invitation_id',
         'partner_one_name',
-        'partner_one_nickname',
+        'partner_one_father',
+        'partner_one_mother',
         'partner_one_photo',
         'partner_two_name',
-        'partner_two_nickname',
+        'partner_two_father',
+        'partner_two_mother',
         'partner_two_photo',
         'story',
     ];

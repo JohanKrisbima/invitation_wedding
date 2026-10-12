@@ -122,10 +122,12 @@ class DatabaseSeeder extends Seeder
             ['invitation_id' => $invitation->id],
             [
                 'partner_one_name' => 'Andi Pratama, S.Kom',
-                'partner_one_nickname' => 'Andi',
+                'partner_one_father' => 'Bambang Pratama',
+                'partner_one_mother' => 'Endang Sulastri',
                 'partner_one_photo' => null,
                 'partner_two_name' => 'Sinta Lestari, S.E',
-                'partner_two_nickname' => 'Sinta',
+                'partner_two_father' => 'Joko Lestari',
+                'partner_two_mother' => 'Sri Wahyuni',
                 'partner_two_photo' => null,
                 'story' => 'Pertama kali bertemu di bangku kuliah pada tahun 2020. Setelah 6 tahun menjalin cerita penuh tawa dan impian bersama, kini kami mantap melangkah ke jenjang pernikahan yang suci.',
             ]

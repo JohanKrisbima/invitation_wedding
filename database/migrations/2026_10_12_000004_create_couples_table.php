@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('invitation_id')->unique()->constrained('invitations')->cascadeOnDelete();
             $table->string('partner_one_name');
-            $table->string('partner_one_nickname');
+            $table->string('partner_one_father');
+            $table->string('partner_one_mother');
             $table->string('partner_one_photo')->nullable();
             $table->string('partner_two_name');
-            $table->string('partner_two_nickname');
+            $table->string('partner_two_father');
+            $table->string('partner_two_mother');
             $table->string('partner_two_photo')->nullable();
             $table->text('story')->nullable();
             $table->timestamps();

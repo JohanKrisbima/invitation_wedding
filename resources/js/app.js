@@ -1,7 +1,9 @@
+import Alpine from 'alpinejs';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-// Expose globally so external JS files (e.g., template scripts, admin scripts) can use it
+// Expose globally so external JS files (e.g., template scripts, admin scripts) can use them
+window.Alpine = Alpine;
 window.Swal = Swal;
 
 /**
@@ -52,7 +54,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const type = flashElement.dataset.type || 'info';
         const message = flashElement.dataset.message || '';
         if (message) {
-            window.showToast(message, type);
+            if (type === 'error') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menyimpan!',
+                    text: message,
+                    confirmButtonColor: '#C25E2E',
+                    confirmButtonText: 'Tutup & Periksa Kembali',
+                    customClass: {
+                        popup: 'rounded-3xl shadow-2xl backdrop-blur-xl bg-white/95 border border-stone-200 text-stone-800 font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold shadow-sm',
+                    },
+                });
+            } else {
+                window.showToast(message, type);
+            }
         }
     }
 });
+
+import ordersTable from './admin/orders-table';
+import eventsManager from './admin/events-manager';
+import formSubmit from './admin/form-submit';
+
+// Register Alpine Components
+Alpine.data('ordersTable', ordersTable);
+Alpine.data('eventsManager', eventsManager);
+Alpine.data('formSubmit', formSubmit);
+
+// Start Alpine
+Alpine.start();

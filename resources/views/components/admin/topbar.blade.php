@@ -1,4 +1,4 @@
-<header class="relative z-40 w-full bg-white/70 backdrop-blur-md rounded-3xl border border-stone-200/60 shadow-xs px-6 py-3.5 flex items-center justify-between gap-4">
+<header class="relative z-40 w-full shrink-0 bg-white/70 backdrop-blur-md rounded-3xl border border-stone-200/60 shadow-xs px-6 py-3.5 flex items-center justify-between gap-4">
     <!-- Left Info Pills -->
     <div class="flex items-center flex-wrap gap-3 text-xs text-stone-600 font-medium">
         <!-- App Indicator -->

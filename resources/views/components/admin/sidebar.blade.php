@@ -1,5 +1,5 @@
-<aside class="w-64 shrink-0 hidden lg:flex flex-col bg-white/80 backdrop-blur-md rounded-3xl border border-stone-200/60 shadow-xs p-5 justify-between">
-    <div class="space-y-6">
+<aside class="w-64 shrink-0 h-full hidden lg:flex flex-col bg-white/80 backdrop-blur-md rounded-3xl border border-stone-200/60 shadow-xs p-5 justify-between min-h-0">
+    <div class="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1">
         <!-- Logo / Brand Header -->
         <div class="flex items-center gap-3 px-2 py-1">
             <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#C25E2E] to-[#A84B20] text-white flex items-center justify-center shadow-md shadow-[#C25E2E]/20">
@@ -65,8 +65,8 @@
 
                     <!-- Katalog Templates -->
                     <a 
-                        href="#" 
-                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all duration-200"
+                        href="{{ route('admin.templates.index') }}" 
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 {{ request()->routeIs('admin.templates.*') ? 'bg-[#C25E2E] text-white shadow-sm shadow-[#C25E2E]/25' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/70' }}"
                     >
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
@@ -95,8 +95,8 @@
 
                     <!-- RSVP & Buku Tamu -->
                     <a 
-                        href="#" 
-                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-100/70 transition-all duration-200"
+                        href="{{ route('admin.guestbook.index') }}" 
+                        class="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-200 {{ request()->routeIs('admin.guestbook.*') ? 'bg-[#C25E2E] text-white shadow-sm shadow-[#C25E2E]/25' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100/70' }}"
                     >
                         <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -109,7 +109,7 @@
     </div>
 
     <!-- Bottom Action (Logout) -->
-    <div class="pt-4 border-t border-stone-200/60">
+    <div class="pt-4 border-t border-stone-200/60 shrink-0">
         <form method="POST" action="{{ route('logout') ?? '#' }}">
             @csrf
             <button 

@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\GuestbookController;
 use App\Http\Controllers\Admin\GuestController;
 use App\Http\Controllers\Admin\InvitationController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Public\HomeController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Authentication Routes
@@ -20,6 +23,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Templates Catalog Management
+    Route::get('/templates', [TemplateController::class, 'index'])->name('templates.index');
+    Route::post('/templates', [TemplateController::class, 'store'])->name('templates.store');
+    Route::put('/templates/{template}', [TemplateController::class, 'update'])->name('templates.update');
+    Route::post('/templates/{template}/toggle-status', [TemplateController::class, 'toggleStatus'])->name('templates.toggle-status');
+    Route::delete('/templates/{template}', [TemplateController::class, 'destroy'])->name('templates.destroy');
 
     // Orders Management
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
@@ -49,11 +59,15 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/guests/export-data', [GuestController::class, 'exportData'])->name('guests.export-data');
     Route::get('/guests/export', [GuestController::class, 'exportFile'])->name('guests.export');
     Route::get('/guests/template-download', [GuestController::class, 'downloadTemplate'])->name('guests.download-template');
+
+    // Guestbook & RSVP Interactions Management
+    Route::get('/guestbook', [GuestbookController::class, 'index'])->name('guestbook.index');
+    Route::post('/guestbook/messages/{message}/toggle-approval', [GuestbookController::class, 'toggleApproval'])->name('guestbook.toggle-approval');
+    Route::delete('/guestbook/messages/{message}', [GuestbookController::class, 'destroyMessage'])->name('guestbook.destroy-message');
+    Route::delete('/guestbook/rsvps/{rsvp}', [GuestbookController::class, 'destroyRsvp'])->name('guestbook.destroy-rsvp');
+    Route::get('/guestbook/export-rsvp-data', [GuestbookController::class, 'exportRsvpData'])->name('guestbook.export-rsvp-data');
+    Route::get('/guestbook/export-messages-data', [GuestbookController::class, 'exportMessagesData'])->name('guestbook.export-messages-data');
 });
 
-// Root Route Redirect
-Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('login');
-});
+// Public Landing Page (Lumina Invites)
+Route::get('/', [HomeController::class, 'index'])->name('home');

@@ -77,12 +77,16 @@ import ordersTable from './admin/orders-table';
 import invitationsTable from './admin/invitations-table';
 import invitationEdit from './admin/invitation-edit';
 import guestsTable from './admin/guests-table';
+import guestbook from './admin/guestbook';
+import templatesManager from './admin/templates';
 
 // Register Alpine Components
 Alpine.data('ordersTable', ordersTable);
 Alpine.data('invitationsTable', invitationsTable);
 Alpine.data('invitationEdit', invitationEdit);
 Alpine.data('guestsTable', guestsTable);
+Alpine.data('guestbook', guestbook);
+Alpine.data('templatesManager', templatesManager);
 
 // Start Alpine
 Alpine.start();

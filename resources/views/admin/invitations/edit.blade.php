@@ -1,5 +1,12 @@
 <x-admin.layout :title="'Kelola: ' . ($invitation->couple->partner_one_name ?? $invitation->slug)">
-    <div x-data="{ activeTab: '{{ request('tab', 'couple') }}' }" class="space-y-6">
+    <div 
+        x-data="invitationEdit({
+            initialTab: '{{ $errors->has('photos') || $errors->has('photos.*') ? 'gallery' : ($errors->has('events') || $errors->has('events.*') ? 'events' : ($errors->has('slug') || $errors->has('template_id') ? 'publication' : request('tab', 'couple'))) }}',
+            initialEvents: {{ Js::from($invitation->events) }},
+            maxPhotoSizeMb: 5
+        })" 
+        class="space-y-6"
+    >
         <!-- Top Navigation / Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -7,7 +14,7 @@
                 <div class="flex items-center gap-2 text-xs text-stone-500 mb-1">
                     <a href="{{ route('admin.dashboard') }}" class="hover:text-stone-800 transition">Dashboard</a>
                     <span>/</span>
-                    <a href="{{ route('admin.dashboard') }}" class="hover:text-stone-800 transition">Pesanan</a>
+                    <a href="{{ route('admin.invitations.index') }}" class="hover:text-stone-800 transition">Undangan</a>
                     <span>/</span>
                     <span class="text-stone-800 font-medium">Kelola Konten</span>
                 </div>
@@ -21,16 +28,32 @@
             </div>
 
             <!-- Top Right Action Controls -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <x-admin.badge :status="$invitation->publication_status" />
+
+                <!-- Tombol Kelola Daftar Tamu -->
+                <a 
+                    href="{{ route('admin.guests.index', ['invitation_id' => $invitation->id]) }}" 
+                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 border border-stone-200/80 text-xs font-semibold shadow-xs transition"
+                >
+                    <svg class="w-3.5 h-3.5 text-[#C25E2E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Daftar Tamu</span>
+                    @if ($invitation->guests->count() > 0)
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-100 text-[#C25E2E] font-bold">
+                            {{ $invitation->guests->count() }}
+                        </span>
+                    @endif
+                </a>
 
                 <!-- Tombol Lihat Undangan Publik -->
                 <a 
                     href="{{ url('/' . $invitation->slug) }}" 
                     target="_blank"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 border border-stone-200/80 text-xs font-semibold shadow-xs transition"
+                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white hover:bg-stone-50 text-stone-800 border border-stone-200/80 text-xs font-semibold shadow-xs transition"
                 >
-                    <span>Lihat Halaman Undangan</span>
+                    <span>Lihat Undangan</span>
                     <svg class="w-3.5 h-3.5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
@@ -107,7 +130,7 @@
         <!-- ================= TAB 1: PROFIL MEMPELAI ================= -->
         <div x-show="activeTab === 'couple'" x-transition x-cloak>
             <x-admin.card title="Data Profil Kedua Mempelai" subtitle="Lengkapi biodata kedua calon pengantin serta nama kedua orang tua masing-masing.">
-                <form method="POST" action="{{ route('admin.invitations.update-couple', $invitation->id) }}" enctype="multipart/form-data" class="space-y-6">
+                <form @submit="handleSubmit('couple')" method="POST" action="{{ route('admin.invitations.update-couple', $invitation->id) }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -171,6 +194,7 @@
                                     type="file" 
                                     name="partner_one_photo" 
                                     accept="image/*"
+                                    @change="validateFileSize($event, 5)"
                                     class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white file:text-[#C25E2E] file:shadow-xs hover:file:bg-amber-50"
                                 >
                                 <p class="text-[11px] text-stone-400 mt-1">Format: JPG, JPEG, PNG, WEBP (Maksimal ukuran file: 5 MB).</p>
@@ -236,6 +260,7 @@
                                     type="file" 
                                     name="partner_two_photo" 
                                     accept="image/*"
+                                    @change="validateFileSize($event, 5)"
                                     class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white file:text-[#C25E2E] file:shadow-xs hover:file:bg-amber-50"
                                 >
                                 <p class="text-[11px] text-stone-400 mt-1">Format: JPG, JPEG, PNG, WEBP (Maksimal ukuran file: 5 MB).</p>
@@ -258,12 +283,27 @@
                     <div class="flex justify-end pt-2">
                         <button 
                             type="submit"
+                            x-show="!isSubmitting"
                             class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#C25E2E] hover:bg-[#A84B20] text-white text-xs font-bold shadow-sm shadow-[#C25E2E]/25 transition duration-150"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                             <span>Simpan Profil Mempelai</span>
+                        </button>
+
+                        <button 
+                            type="button"
+                            disabled
+                            x-show="isSubmitting"
+                            x-cloak
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-stone-400 text-white text-xs font-bold cursor-not-allowed shadow-none"
+                        >
+                            <svg class="animate-spin -ml-1 mr-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Menyimpan Profil...</span>
                         </button>
                     </div>
                 </form>
@@ -273,11 +313,11 @@
         <!-- ================= TAB 2: RANGKAIAN ACARA ================= -->
         <div x-show="activeTab === 'events'" x-transition x-cloak>
             <x-admin.card title="Rangkaian Acara Pernikahan" subtitle="Kelola jadwal Akad Nikah, Resepsi, atau acara lainnya secara dinamis.">
-                <form method="POST" action="{{ route('admin.invitations.update-events', $invitation->id) }}" class="space-y-6">
+                <form @submit="handleSubmit('events')" method="POST" action="{{ route('admin.invitations.update-events', $invitation->id) }}" class="space-y-6">
                     @csrf
                     @method('PUT')
 
-                    <div x-data="eventsManager({{ Js::from($invitation->events) }})" class="space-y-4">
+                    <div class="space-y-4">
                         <!-- Dynamic Event Cards -->
                         <template x-for="(event, index) in events" :key="index">
                             <div class="p-5 sm:p-6 rounded-3xl bg-stone-50/80 border border-stone-200/60 relative space-y-4 transition">
@@ -393,12 +433,27 @@
 
                             <button 
                                 type="submit"
+                                x-show="!isSubmitting"
                                 class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#C25E2E] hover:bg-[#A84B20] text-white text-xs font-bold shadow-sm shadow-[#C25E2E]/25 transition"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span>Simpan Semua Jadwal Acara</span>
+                            </button>
+
+                            <button 
+                                type="button"
+                                disabled
+                                x-show="isSubmitting"
+                                x-cloak
+                                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-stone-400 text-white text-xs font-bold cursor-not-allowed shadow-none"
+                            >
+                                <svg class="animate-spin -ml-1 mr-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Menyimpan Jadwal...</span>
                             </button>
                         </div>
                     </div>
@@ -410,7 +465,7 @@
         <div x-show="activeTab === 'gallery'" x-transition x-cloak>
             <x-admin.card title="Galeri Foto Prewedding" subtitle="Unggah foto-foto prewedding yang akan tampil di slide/album undangan digital.">
                 <!-- Form Upload Foto Baru -->
-                <form method="POST" action="{{ route('admin.invitations.upload-gallery', $invitation->id) }}" enctype="multipart/form-data" class="p-5 rounded-3xl bg-stone-50/80 border border-stone-200/60 mb-6 space-y-4">
+                <form @submit="handleSubmit('gallery')" method="POST" action="{{ route('admin.invitations.upload-gallery', $invitation->id) }}" enctype="multipart/form-data" class="p-5 rounded-3xl bg-stone-50/80 border border-stone-200/60 mb-6 space-y-4">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div class="sm:col-span-2">
@@ -424,6 +479,7 @@
                                 multiple 
                                 accept="image/*" 
                                 required
+                                @change="validateFileSize($event, 5)"
                                 class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white file:text-[#C25E2E] file:shadow-xs hover:file:bg-amber-50"
                             >
                             <p class="text-[11px] text-stone-400 mt-1.5 flex items-center gap-1.5">
@@ -448,12 +504,27 @@
                     <div class="flex justify-end pt-2">
                         <button 
                             type="submit"
+                            x-show="!isSubmitting"
                             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#C25E2E] hover:bg-[#A84B20] text-white text-xs font-bold shadow-sm shadow-[#C25E2E]/25 transition"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                             </svg>
                             <span>Unggah Foto ke Galeri</span>
+                        </button>
+
+                        <button 
+                            type="button"
+                            disabled
+                            x-show="isSubmitting"
+                            x-cloak
+                            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-stone-400 text-white text-xs font-bold cursor-not-allowed shadow-none"
+                        >
+                            <svg class="animate-spin -ml-1 mr-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Sedang Mengunggah Foto...</span>
                         </button>
                     </div>
                 </form>
@@ -503,7 +574,7 @@
         <!-- ================= TAB 4: TEMA & PUBLIKASI ================= -->
         <div x-show="activeTab === 'publication'" x-transition x-cloak>
             <x-admin.card title="Pengaturan URL & Publikasi Undangan" subtitle="Tentukan slug link unik undangan dan aktifkan status agar dapat diakses oleh tamu.">
-                <form method="POST" action="{{ route('admin.invitations.update-publication', $invitation->id) }}" class="space-y-6">
+                <form @submit="handleSubmit('publication')" method="POST" action="{{ route('admin.invitations.update-publication', $invitation->id) }}" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -580,12 +651,27 @@
                     <div class="flex justify-end pt-2">
                         <button 
                             type="submit"
+                            x-show="!isSubmitting"
                             class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#C25E2E] hover:bg-[#A84B20] text-white text-xs font-bold shadow-sm shadow-[#C25E2E]/25 transition"
                         >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
                             <span>Simpan Konfigurasi & Perbarui Status</span>
+                        </button>
+
+                        <button 
+                            type="button"
+                            disabled
+                            x-show="isSubmitting"
+                            x-cloak
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-stone-400 text-white text-xs font-bold cursor-not-allowed shadow-none"
+                        >
+                            <svg class="animate-spin -ml-1 mr-1 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Menyimpan Pengaturan...</span>
                         </button>
                     </div>
                 </form>

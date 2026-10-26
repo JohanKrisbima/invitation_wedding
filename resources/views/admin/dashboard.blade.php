@@ -1,166 +1,281 @@
-<x-admin.layout title="Dashboard Pesanan">
+<x-admin.layout title="Dashboard Monitoring">
     <div class="space-y-6">
         <!-- Page Title & Period Indicator -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight font-serif">
-                    Dashboard
+                    Dashboard Monitoring
                 </h1>
                 <p class="text-xs sm:text-sm text-stone-500 mt-0.5">
-                    Ringkasan pesanan masuk dan aktivitas undangan digital periode ini.
+                    Ringkasan performa penjualan, monitoring status pesanan masuk, dan progres undangan digital.
                 </p>
             </div>
 
-            <div class="inline-flex items-center gap-2 self-start sm:self-auto bg-white/70 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-stone-200/60 shadow-xs text-xs font-semibold text-stone-700">
-                <span class="w-2 h-2 rounded-full bg-[#C25E2E]"></span>
+            <div class="inline-flex items-center gap-2 self-start sm:self-auto bg-white/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-stone-200/60 shadow-xs text-xs font-semibold text-stone-700">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#C25E2E] animate-pulse"></span>
                 <span>Periode: {{ now()->translatedFormat('F Y') }}</span>
             </div>
         </div>
 
-        <!-- Metric Stat Cards (4 Cards Grid) -->
+        <!-- 4 Metric Stat Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            <!-- 1. Total Pesanan -->
+            <!-- 1. Total Pendapatan / Omset Lunas -->
             <x-admin.stat-card 
-                label="Total Pesanan" 
-                :value="$totalOrders" 
-                subtext="Semua pesanan terdaftar" 
-                icon="orders" 
+                label="Total Pendapatan" 
+                :value="'Rp ' . number_format($totalRevenue, 0, ',', '.')" 
+                subtext="Dari pesanan berstatus Lunas (PAID)" 
+                icon="chart" 
                 color="terracotta" 
             />
 
-            <!-- 2. Menunggu Konfirmasi -->
+            <!-- 2. Total Pesanan -->
             <x-admin.stat-card 
-                label="Menunggu Konfirmasi" 
+                label="Total Pesanan" 
+                :value="$totalOrders" 
+                :subtext="$unpaidOrders . ' pesanan belum bayar'" 
+                icon="orders" 
+                color="sky" 
+            />
+
+            <!-- 3. Menunggu Validasi -->
+            <x-admin.stat-card 
+                label="Menunggu Validasi" 
                 :value="$pendingOrders" 
-                subtext="Perlu tindak lanjut WA" 
+                subtext="Perlu konfirmasi transfer" 
                 icon="pending" 
                 color="amber" 
             />
 
-            <!-- 3. Sedang Dikerjakan -->
+            <!-- 4. Undangan Aktif Publik -->
             <x-admin.stat-card 
-                label="Sedang Dikerjakan" 
-                :value="$inProgressOrders" 
-                subtext="Proses isi konten" 
-                icon="progress" 
-                color="sky" 
-            />
-
-            <!-- 4. Lunas & Selesai -->
-            <x-admin.stat-card 
-                label="Lunas & Aktif" 
-                :value="$completedOrders" 
-                subtext="Tautan aktif publik" 
+                label="Undangan Aktif (Live)" 
+                :value="$activeInvitations" 
+                :subtext="'Dari ' . $totalInvitations . ' total undangan digital'" 
                 icon="completed" 
                 color="emerald" 
             />
         </div>
 
-        <!-- Orders Table Card with Server-Side Alpine.js Controller -->
-        <x-admin.card>
-            <div x-data="ordersTable()" class="space-y-5">
-                <!-- Header: Title & Action Controls -->
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-stone-900 tracking-tight">
-                            Manajemen Pesanan Masuk
-                        </h2>
-                        <p class="text-xs text-stone-500 mt-0.5">
-                            Data diproses secara server-side. Gunakan filter untuk menyaring data dengan cepat.
-                        </p>
-                    </div>
+        <!-- Monitoring Section: 2 Columns Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- SISI KIRI (7 Kolom): Monitoring Pesanan Terbaru -->
+            <div class="lg:col-span-7 space-y-6">
+                <x-admin.card>
+                    <div class="space-y-4">
+                        <!-- Header Card -->
+                        <div class="flex items-center justify-between pb-3 border-b border-stone-200/60">
+                            <div>
+                                <h2 class="text-base font-bold text-stone-900 tracking-tight font-serif">
+                                    Monitoring Pesanan Terbaru
+                                </h2>
+                                <p class="text-xs text-stone-500 mt-0.5">
+                                    Transaksi pemesanan yang baru masuk dari pelanggan.
+                                </p>
+                            </div>
 
-                    <!-- Action Button: Buat Undangan -->
-                    <div class="flex items-center gap-3">
-                        <button 
-                            type="button" 
-                            @click="showToast('Fitur form pemesanan baru akan segera dibuka!', 'info')"
-                            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#C25E2E] hover:bg-[#A84B20] text-white text-xs font-semibold shadow-sm shadow-[#C25E2E]/25 transition-all duration-200"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>+ Buat Pesanan Baru</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Filter Controls Bar -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2">
-                    <!-- Live Search (Debounced 350ms) -->
-                    <div class="md:col-span-6 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                            <a 
+                                href="{{ route('admin.orders.index') }}" 
+                                class="inline-flex items-center gap-1.5 text-xs font-bold text-[#C25E2E] hover:text-[#A84B20] transition"
+                            >
+                                <span>Buka Menu Pesanan</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
                         </div>
-                        <input 
-                            type="text" 
-                            x-model="search"
-                            @input.debounce.350ms="filterOrders()"
-                            placeholder="Cari nomor pesanan, nama pemesan, no WA..." 
-                            class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-stone-200 bg-white/70 backdrop-blur-xs text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#C25E2E]/30 focus:border-[#C25E2E] transition"
-                        >
-                    </div>
 
-                    <!-- Filter Status Order -->
-                    <div class="md:col-span-3">
-                        <select 
-                            x-model="status" 
-                            @change="filterOrders()"
-                            class="w-full px-3.5 py-2.5 rounded-2xl border border-stone-200 bg-white/70 backdrop-blur-xs text-xs text-stone-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#C25E2E]/30 focus:border-[#C25E2E] transition"
-                        >
-                            <option value="all">Semua Status Order</option>
-                            <option value="pending">Pending (Menunggu)</option>
-                            <option value="in_progress">In Progress (Dikerjakan)</option>
-                            <option value="completed">Completed (Selesai)</option>
-                            <option value="cancelled">Cancelled (Dibatalkan)</option>
-                        </select>
-                    </div>
-
-                    <!-- Filter Payment Status -->
-                    <div class="md:col-span-3">
-                        <select 
-                            x-model="payment" 
-                            @change="filterOrders()"
-                            class="w-full px-3.5 py-2.5 rounded-2xl border border-stone-200 bg-white/70 backdrop-blur-xs text-xs text-stone-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#C25E2E]/30 focus:border-[#C25E2E] transition"
-                        >
-                            <option value="all">Semua Pembayaran</option>
-                            <option value="paid">PAID (Sudah Bayar)</option>
-                            <option value="unpaid">UNPAID (Belum Bayar)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Table Container with Relative Loading Overlay -->
-                <div class="relative min-h-[220px]">
-                    <!-- Loading Overlay (Frosted Blur Spinner) -->
-                    <div 
-                        x-show="isLoading" 
-                        x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="transition ease-in duration-100"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        class="absolute inset-0 bg-white/60 backdrop-blur-xs rounded-2xl flex items-center justify-center z-10"
-                        x-cloak
-                    >
-                        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-stone-900/85 text-white text-xs font-medium shadow-xl">
-                            <svg class="w-4 h-4 animate-spin text-[#C25E2E]" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        <!-- Info Banner Alur Kerja -->
+                        <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/60 flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-700 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
-                            <span>Memuat data pesanan...</span>
+                            <div class="text-xs text-amber-900 leading-relaxed">
+                                <strong>Catatan Admin:</strong> Halaman Dashboard ini khusus untuk <strong>monitoring</strong>. Untuk memvalidasi bukti pembayaran dan membuatkan undangan pengantin, silakan gunakan tombol aksi di <a href="{{ route('admin.orders.index') }}" class="font-bold underline hover:text-[#C25E2E]">Menu Pesanan</a>.
+                            </div>
+                        </div>
+
+                        <!-- Table Feed Pesanan Terbaru -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-stone-700">
+                                <thead>
+                                    <tr class="border-b border-stone-200/60 text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                                        <th class="py-2.5 pr-3">Pesanan</th>
+                                        <th class="py-2.5 px-3">Template</th>
+                                        <th class="py-2.5 px-3">Total</th>
+                                        <th class="py-2.5 px-3">Status Bayar</th>
+                                        <th class="py-2.5 pl-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-stone-100">
+                                    @forelse ($recentOrders as $order)
+                                        <tr class="hover:bg-stone-50/60 transition">
+                                            <!-- Pesanan & Pemesan -->
+                                            <td class="py-3 pr-3">
+                                                <div class="font-bold text-stone-900">{{ $order->customer_name }}</div>
+                                                <div class="text-[11px] font-mono text-stone-400">{{ $order->order_number }} • {{ $order->created_at->diffForHumans() }}</div>
+                                            </td>
+
+                                            <!-- Template -->
+                                            <td class="py-3 px-3">
+                                                <span class="font-medium text-stone-800">{{ $order->template->name ?? '-' }}</span>
+                                                <span class="block text-[10px] text-stone-400">{{ $order->template->category ?? '' }}</span>
+                                            </td>
+
+                                            <!-- Total Harga -->
+                                            <td class="py-3 px-3 font-semibold text-stone-900">
+                                                Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                            </td>
+
+                                            <!-- Status Bayar -->
+                                            <td class="py-3 px-3">
+                                                @if ($order->payment_status === 'paid')
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/60">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                                                        PAID
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200/60">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                                                        UNPAID
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                            <!-- Aksi Cepat -->
+                                            <td class="py-3 pl-3 text-right whitespace-nowrap">
+                                                <a 
+                                                    href="{{ route('admin.orders.index', ['search' => $order->order_number]) }}" 
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white border border-stone-200 hover:bg-stone-100 text-stone-700 text-[11px] font-semibold transition"
+                                                >
+                                                    <span>Kelola</span>
+                                                    <svg class="w-3 h-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="py-8 text-center text-stone-400">
+                                                Belum ada data pesanan masuk.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-
-                    <!-- Rendered Server-Side Table Body -->
-                    <div id="orders-table-container">
-                        @include('admin.orders._table', ['orders' => $orders])
-                    </div>
-                </div>
+                </x-admin.card>
             </div>
-        </x-admin.card>
+
+            <!-- SISI KANAN (5 Kolom): Status Undangan & Template Terpopuler -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Status Progres Undangan Digital -->
+                <x-admin.card>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-stone-200/60">
+                            <div>
+                                <h2 class="text-base font-bold text-stone-900 tracking-tight font-serif">
+                                    Status Undangan Digital
+                                </h2>
+                                <p class="text-xs text-stone-500 mt-0.5">
+                                    Monitoring publikasi website undangan.
+                                </p>
+                            </div>
+                            <a 
+                                href="{{ route('admin.invitations.index') }}" 
+                                class="inline-flex items-center gap-1 text-xs font-bold text-[#C25E2E] hover:text-[#A84B20] transition"
+                            >
+                                <span>Lihat Semua</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+
+                        <!-- Progress Breakdown Boxes -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/60">
+                                <span class="text-[11px] font-semibold text-emerald-700 block">Published (Aktif)</span>
+                                <div class="mt-1 flex items-baseline gap-1.5">
+                                    <span class="text-2xl font-extrabold text-emerald-900 font-serif">{{ $activeInvitations }}</span>
+                                    <span class="text-[11px] text-emerald-600">undangan</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/60">
+                                <span class="text-[11px] font-semibold text-amber-700 block">Draft (Penyusunan)</span>
+                                <div class="mt-1 flex items-baseline gap-1.5">
+                                    <span class="text-2xl font-extrabold text-amber-900 font-serif">{{ $draftInvitations }}</span>
+                                    <span class="text-[11px] text-amber-600">undangan</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- List Undangan Terbaru -->
+                        <div class="space-y-2 pt-1">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-stone-400 block">Undangan Terbaru</span>
+                            @forelse ($recentInvitations as $inv)
+                                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-stone-50/70 border border-stone-200/50 hover:bg-white transition">
+                                    <div class="truncate mr-2">
+                                        <div class="text-xs font-bold text-stone-900 truncate">
+                                            {{ $inv->couple ? $inv->couple->partner_one_name . ' & ' . $inv->couple->partner_two_name : $inv->slug }}
+                                        </div>
+                                        <div class="text-[10px] text-stone-400 font-mono">
+                                            /{{ $inv->slug }} • {{ $inv->template->name ?? '-' }}
+                                        </div>
+                                    </div>
+                                    <div class="shrink-0 flex items-center gap-2">
+                                        <x-admin.badge :status="$inv->publication_status" />
+                                        <a 
+                                            href="{{ route('admin.invitations.edit', $inv->id) }}" 
+                                            class="w-7 h-7 rounded-xl bg-white border border-stone-200 text-stone-600 hover:text-[#C25E2E] flex items-center justify-center shadow-2xs transition"
+                                            title="Edit Undangan"
+                                        >
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-xs text-stone-400 py-2">Belum ada undangan digital.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </x-admin.card>
+
+                <!-- Template Terpopuler -->
+                <x-admin.card>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-stone-200/60">
+                            <h2 class="text-sm font-bold text-stone-900 tracking-tight font-serif">
+                                Template Paling Banyak Dipesan
+                            </h2>
+                            <span class="text-[11px] font-semibold text-stone-400">Total: {{ $totalTemplates }} Template</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            @foreach ($popularTemplates as $tmpl)
+                                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-stone-50/60 border border-stone-200/50">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-xl bg-[#C25E2E]/10 text-[#C25E2E] flex items-center justify-center font-bold text-xs">
+                                            #{{ $loop->iteration }}
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-stone-800 block">{{ $tmpl->name }}</span>
+                                            <span class="text-[10px] text-stone-400 block">{{ $tmpl->category }} • Rp {{ number_format($tmpl->price, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-xl bg-white border border-stone-200 text-xs font-extrabold text-stone-800 shadow-2xs">
+                                        {{ $tmpl->orders_count }} pesanan
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </x-admin.card>
+            </div>
+        </div>
     </div>
 </x-admin.layout>

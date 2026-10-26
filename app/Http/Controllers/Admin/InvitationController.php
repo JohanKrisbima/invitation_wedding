@@ -18,30 +18,61 @@ use Illuminate\Validation\Rule;
 class InvitationController extends Controller
 {
     /**
-     * Display a listing of all digital invitations.
+     * Display a listing of all digital invitations with server-side filtering, live search, and pagination.
      */
     public function index(Request $request)
     {
+        // 1. Metric Counts for Invitations Overview
+        $totalInvitations = Invitation::count();
+        $publishedInvitations = Invitation::where('publication_status', 'published')->count();
+        $draftInvitations = Invitation::where('publication_status', 'draft')->count();
+        $archivedInvitations = Invitation::where('publication_status', 'archived')->count();
+
+        // 2. Query Builder for Invitations Table (Server-Side)
         $query = Invitation::with(['order', 'template', 'couple'])->latest();
 
+        // Search Filter (slug, customer_name, partner_one_name, partner_two_name, order_number)
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('slug', 'ILIKE', "%{$search}%")
-                  ->orWhereHas('order', fn($oq) => $oq->where('customer_name', 'ILIKE', "%{$search}%"))
+                  ->orWhereHas('order', fn($oq) => $oq->where('customer_name', 'ILIKE', "%{$search}%")
+                                                      ->orWhere('order_number', 'ILIKE', "%{$search}%"))
                   ->orWhereHas('couple', fn($cq) => $cq->where('partner_one_name', 'ILIKE', "%{$search}%")
                                                         ->orWhere('partner_two_name', 'ILIKE', "%{$search}%"));
             });
         }
 
+        // Status Filter (published, draft, archived)
         if ($status = $request->input('status')) {
             if ($status !== 'all') {
                 $query->where('publication_status', $status);
             }
         }
 
-        $invitations = $query->paginate(10)->withQueryString();
+        // Template Filter
+        if ($template = $request->input('template')) {
+            if ($template !== 'all') {
+                $query->where('template_id', $template);
+            }
+        }
 
-        return view('admin.invitations.index', compact('invitations'));
+        // Paginate Server-Side (10 per page)
+        $invitations = $query->paginate(10)->withQueryString();
+        $templates = Template::where('is_active', true)->get();
+
+        // If AJAX request (live search, filter change, or pagination click), return only table partial
+        if ($request->ajax() || $request->header('X-Alpine-Request') || $request->boolean('ajax')) {
+            return view('admin.invitations._table', compact('invitations'))->render();
+        }
+
+        return view('admin.invitations.index', compact(
+            'invitations',
+            'templates',
+            'totalInvitations',
+            'publishedInvitations',
+            'draftInvitations',
+            'archivedInvitations'
+        ));
     }
 
     /**

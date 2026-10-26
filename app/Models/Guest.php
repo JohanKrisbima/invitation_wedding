@@ -15,6 +15,7 @@ class Guest extends Model
         'invitation_id',
         'name',
         'phone',
+        'address',
         'invitation_sent_at',
     ];
 

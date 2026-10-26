@@ -1,4 +1,4 @@
-@if ($errors->any())
+@if (isset($errors) && $errors->any())
     <div id="app-flash-message" data-type="error" data-message="{{ $errors->first() }}" class="hidden"></div>
 @elseif (session('success'))
     <div id="app-flash-message" data-type="success" data-message="{{ session('success') }}" class="hidden"></div>

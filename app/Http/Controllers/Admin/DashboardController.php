@@ -3,62 +3,62 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invitation;
 use App\Models\Order;
+use App\Models\Template;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     /**
-     * Display the main admin dashboard with stats and server-side orders table.
+     * Display the main admin monitoring dashboard.
      */
-    public function index(Request $request)
+    public function index()
     {
-        // 1. Metric Stats
+        // 1. Financial & Volume Metrics
+        $totalRevenue = Order::where('payment_status', 'paid')->sum('total_price');
         $totalOrders = Order::count();
+        $unpaidOrders = Order::where('payment_status', 'unpaid')->count();
         $pendingOrders = Order::where('order_status', 'pending')->count();
         $inProgressOrders = Order::where('order_status', 'in_progress')->count();
-        $completedOrders = Order::where('order_status', 'completed')->count();
 
-        // 2. Query Builder for Orders Table (Server-Side)
-        $query = Order::with(['template', 'invitation'])->latest();
+        // 2. Invitation Publication Metrics
+        $totalInvitations = Invitation::count();
+        $activeInvitations = Invitation::where('publication_status', 'published')->count();
+        $draftInvitations = Invitation::where('publication_status', 'draft')->count();
 
-        // Search Filter
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('customer_name', 'ILIKE', "%{$search}%")
-                  ->orWhere('order_number', 'ILIKE', "%{$search}%")
-                  ->orWhere('customer_phone', 'ILIKE', "%{$search}%");
-            });
-        }
+        // 3. Catalog Metrics
+        $totalTemplates = Template::where('is_active', true)->count();
+        $popularTemplates = Template::withCount('orders')
+            ->orderByDesc('orders_count')
+            ->take(4)
+            ->get();
 
-        // Status Filter
-        if ($status = $request->input('status')) {
-            if ($status !== 'all') {
-                $query->where('order_status', $status);
-            }
-        }
+        // 4. Recent Orders Feed (Monitoring latest 6 transactions)
+        $recentOrders = Order::with(['template', 'invitation'])
+            ->latest()
+            ->take(6)
+            ->get();
 
-        // Payment Status Filter
-        if ($payment = $request->input('payment')) {
-            if ($payment !== 'all') {
-                $query->where('payment_status', $payment);
-            }
-        }
-
-        // Paginate Server-Side (10 per page)
-        $orders = $query->paginate(10)->withQueryString();
-
-        // If AJAX request (live search, filter change, or pagination click), return only table partial
-        if ($request->ajax() || $request->header('X-Alpine-Request') || $request->boolean('ajax')) {
-            return view('admin.orders._table', compact('orders'))->render();
-        }
+        // 5. Recent Invitations Feed (Monitoring latest 5 invitations)
+        $recentInvitations = Invitation::with(['couple', 'template', 'order'])
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('admin.dashboard', compact(
+            'totalRevenue',
             'totalOrders',
+            'unpaidOrders',
             'pendingOrders',
             'inProgressOrders',
-            'completedOrders',
-            'orders'
+            'totalInvitations',
+            'activeInvitations',
+            'draftInvitations',
+            'totalTemplates',
+            'popularTemplates',
+            'recentOrders',
+            'recentInvitations'
         ));
     }
 }

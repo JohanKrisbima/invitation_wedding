@@ -74,13 +74,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 import ordersTable from './admin/orders-table';
-import eventsManager from './admin/events-manager';
-import formSubmit from './admin/form-submit';
+import invitationsTable from './admin/invitations-table';
+import invitationEdit from './admin/invitation-edit';
+import guestsTable from './admin/guests-table';
 
 // Register Alpine Components
 Alpine.data('ordersTable', ordersTable);
-Alpine.data('eventsManager', eventsManager);
-Alpine.data('formSubmit', formSubmit);
+Alpine.data('invitationsTable', invitationsTable);
+Alpine.data('invitationEdit', invitationEdit);
+Alpine.data('guestsTable', guestsTable);
 
 // Start Alpine
 Alpine.start();

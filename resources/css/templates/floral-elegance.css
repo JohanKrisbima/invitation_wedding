@@ -1,0 +1,727 @@
+/**
+ * Floral Elegance — Wedding Invitation Theme (Batik-Botanical Revision)
+ * Palette: Anggur (#6e1c27), Krem (#fdf0e6), Rose (#d9a5a0), Blush (#f4d6cd), Sage (#6f8260), Emas (#b98b52)
+ * Standard: Clean CSS, Glassmorphism, Zero External CDN, Vite Bundled
+ */
+
+:root {
+    --fe-krem: #fdf0e6;
+    --fe-krem-card: rgba(253, 240, 230, 0.92);
+    --fe-anggur: #6e1c27;
+    --fe-anggur-dark: #52121b;
+    --fe-anggur-light: #8e2b39;
+    --fe-rose: #d9a5a0;
+    --fe-blush: #f4d6cd;
+    --fe-sage: #6f8260;
+    --fe-sage-light: #e4ebe0;
+    --fe-emas: #b98b52;
+    --fe-emas-light: #e8d5be;
+    --fe-dark: #2e1c1f;
+    --fe-text-muted: #6b5256;
+    --fe-panel-desktop-width: 480px;
+}
+
+/* Typography Helpers */
+.font-playfair {
+    font-family: "Playfair Display", Georgia, serif;
+}
+
+.font-cormorant {
+    font-family: "Cormorant Garamond", Georgia, serif;
+}
+
+.font-pinyon {
+    font-family: "Pinyon Script", cursive;
+}
+
+.font-body {
+    font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Base Body */
+.floral-theme-root {
+    background-color: var(--fe-krem);
+    color: var(--fe-dark);
+    font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    selection-background-color: rgba(110, 28, 39, 0.2);
+    selection-color: var(--fe-anggur);
+}
+
+/* Subtle Batik Kawung & Botanical Petals Background Pattern */
+.bg-kawung {
+    background-color: var(--fe-krem);
+    background-image:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(110, 28, 39, 0.05) 2px,
+            transparent 2.5px
+        ),
+        radial-gradient(
+            circle at 0 0,
+            rgba(185, 139, 82, 0.06) 12px,
+            transparent 13px
+        ),
+        radial-gradient(
+            circle at 100% 0,
+            rgba(185, 139, 82, 0.06) 12px,
+            transparent 13px
+        ),
+        radial-gradient(
+            circle at 0 100%,
+            rgba(185, 139, 82, 0.06) 12px,
+            transparent 13px
+        ),
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(185, 139, 82, 0.06) 12px,
+            transparent 13px
+        ),
+        radial-gradient(
+            ellipse at 50% 15%,
+            rgba(217, 165, 160, 0.12) 0%,
+            transparent 60%
+        );
+    background-size:
+        38px 38px,
+        38px 38px,
+        38px 38px,
+        38px 38px,
+        38px 38px,
+        100% 100%;
+}
+
+/* Page Card: 1.5px Anggur border, 28-32px radius, clean cream-white */
+.fe-page-card {
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid var(--fe-anggur);
+    border-radius: 28px;
+    box-shadow:
+        0 12px 36px -10px rgba(110, 28, 39, 0.1),
+        0 3px 10px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+    .fe-page-card {
+        border-radius: 32px;
+    }
+}
+
+/* Section 1: Fullscreen Hero Cover Card - Floral Heritage Arch Theme */
+#section-cover {
+    background-color: var(--fe-krem);
+    background-image: url('/images/templates/floral-elegance/cover-bg.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--fe-anggur);
+    border-radius: 30px;
+    box-shadow: 0 16px 48px -12px rgba(90, 20, 29, 0.28), 0 4px 12px rgba(0, 0, 0, 0.05);
+    min-height: calc(100vh - 1.5rem);
+    min-height: calc(100svh - 1.5rem);
+    min-height: calc(100dvh - 1.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 1rem;
+}
+
+@media (min-width: 640px) {
+    #section-cover {
+        border-radius: 36px;
+        min-height: calc(100vh - 2.5rem);
+        min-height: calc(100svh - 2.5rem);
+        min-height: calc(100dvh - 2.5rem);
+        padding: 2.25rem 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    #section-cover {
+        min-height: calc(100vh - 3rem);
+        min-height: calc(100svh - 3rem);
+        min-height: calc(100dvh - 3rem);
+        padding: 2.5rem 1.75rem;
+    }
+}
+
+/* Intertwined Regal Monogram */
+.fe-monogram-intertwined {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0.85;
+    color: var(--fe-anggur);
+    user-select: none;
+}
+
+.fe-monogram-intertwined .fe-mono-first {
+    font-family: 'Pinyon Script', cursive;
+    font-size: 5rem;
+    color: var(--fe-anggur);
+    transform: translateX(10px) translateY(-3px);
+    z-index: 1;
+    filter: drop-shadow(0 2px 4px rgba(90, 20, 29, 0.12));
+}
+
+.fe-monogram-intertwined .fe-mono-second {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3.25rem;
+    font-weight: 700;
+    color: var(--fe-anggur);
+    transform: translateX(-6px) translateY(3px);
+    z-index: 2;
+    mix-blend-mode: multiply;
+}
+
+.fe-monogram-intertwined .fe-mono-amp {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1.75rem;
+    color: var(--fe-emas);
+    margin: 0 -3px;
+    z-index: 3;
+}
+
+@media (min-width: 640px) {
+    .fe-monogram-intertwined .fe-mono-first {
+        font-size: 5.75rem;
+    }
+    .fe-monogram-intertwined .fe-mono-second {
+        font-size: 3.75rem;
+    }
+    .fe-monogram-intertwined .fe-mono-amp {
+        font-size: 2rem;
+    }
+}
+
+/* Scroll Pill Motion (Matching Reference Image) */
+@keyframes feScrollPillMotion {
+    0% {
+        transform: translateY(0);
+        opacity: 0.25;
+    }
+    40% {
+        opacity: 1;
+    }
+    80% {
+        transform: translateY(9px);
+        opacity: 0.25;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 0.25;
+    }
+}
+
+.fe-scroll-dot-anim {
+    animation: feScrollPillMotion 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Refined Pill Badges (Matching Reference Images) */
+.fe-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 1.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(110, 28, 39, 0.25);
+    border-radius: 9999px;
+    box-shadow: 0 2px 8px -2px rgba(110, 28, 39, 0.08);
+}
+
+/* Event Card Pill Badge & Date Header */
+.fe-event-card {
+    contain: layout paint;
+}
+
+.fe-event-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.22rem 0.6rem;
+    background-color: var(--fe-blush);
+    color: var(--fe-anggur);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 9999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    max-width: 65%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 640px) {
+    .fe-event-badge {
+        padding: 0.35rem 0.85rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        max-width: none;
+    }
+}
+
+.fe-event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    text-align: right;
+    line-height: 1.2;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.fe-event-date-day {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #78716c;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.fe-event-date-full {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #292524;
+    white-space: nowrap;
+}
+
+@media (min-width: 520px) {
+    .fe-event-date {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0.35rem;
+    }
+    .fe-event-date-day {
+        font-size: 0.75rem;
+    }
+    .fe-event-date-full {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Realistic Botanical Corner Ornament Styles & Interactions */
+.fe-realistic-floral-corner {
+    will-change: transform, opacity;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+    filter: drop-shadow(0 4px 12px rgba(90, 20, 29, 0.12));
+}
+
+@keyframes feRealisticSwayTL {
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(2deg) scale(1.02);
+    }
+}
+
+@keyframes feRealisticSwayBR {
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(-2deg) scale(1.02);
+    }
+}
+
+.fe-floral-tl {
+    transform-origin: top left;
+    animation: feRealisticSwayTL 8s ease-in-out infinite;
+}
+
+.fe-floral-br {
+    transform-origin: bottom right;
+    animation: feRealisticSwayBR 9s ease-in-out infinite;
+}
+
+.fe-realistic-floral-corner:hover .fe-flower-img {
+    transform: scale(1.08) rotate(1.5deg);
+    filter: drop-shadow(0 8px 20px rgba(90, 20, 29, 0.22));
+}
+
+/* Click/Tap Bloom Bounce */
+@keyframes feFlowerTapBounce {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.2) rotate(4deg);
+    }
+    55% {
+        transform: scale(0.92) rotate(-2deg);
+    }
+    80% {
+        transform: scale(1.05) rotate(1deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.fe-flower-tapped {
+    animation: feFlowerTapBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Scroll Entrance Unfurl */
+.fe-floral-unfurl {
+    opacity: 0;
+    transform: scale(0.65) rotate(-6deg);
+    transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
+}
+
+.fe-floral-unfurled {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+/* Floating Burst Petal from Tap */
+.fe-burst-petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform, opacity;
+    border-radius: 60% 0 60% 60%;
+    box-shadow: 0 2px 6px rgba(90, 20, 29, 0.2);
+    transform-origin: center center;
+}
+
+/* Split-Screen Doors (Cover) */
+.fe-door-left,
+.fe-door-right {
+    transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
+    will-change: transform;
+}
+
+.fe-doors-opened .fe-door-left {
+    transform: translateX(-100%);
+}
+
+.fe-doors-opened .fe-door-right {
+    transform: translateX(100%);
+}
+
+.fe-doors-opened #cover-center-content {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease;
+    pointer-events: none;
+}
+
+.fe-doors-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 0.5s ease 1.4s,
+        visibility 0.5s ease 1.4s;
+}
+
+/* Letter by letter typing reveal */
+@keyframes feLetterFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fe-letter-reveal {
+    display: inline-block;
+    opacity: 0;
+    animation: feLetterFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3D Tilt Oval Photo */
+.fe-oval-tilt {
+    border-radius: 9999px;
+    border: 3px solid var(--fe-emas);
+    box-shadow: 0 16px 36px -8px rgba(110, 28, 39, 0.25);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-style: preserve-3d;
+    perspective: 800px;
+}
+
+/* Accordion Smooth Slide */
+.fe-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition:
+        max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.3s ease;
+    opacity: 0;
+}
+
+.fe-accordion-active .fe-accordion-content {
+    max-height: 300px;
+    opacity: 1;
+}
+
+.fe-accordion-active .fe-accordion-icon {
+    transform: rotate(180deg);
+}
+
+/* Moving Digits Flip / Pop Animation */
+@keyframes feDigitPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+        color: var(--fe-emas);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fe-digit-change {
+    animation: feDigitPulse 0.4s ease-out;
+}
+
+/* Floating Bottom Navigation Bar */
+.fe-bottom-nav {
+    position: fixed;
+    z-index: 40;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(253, 240, 230, 0.95);
+    border: 1px solid rgba(110, 28, 39, 0.25);
+    box-shadow: 0 12px 32px -4px rgba(110, 28, 39, 0.25);
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0.4s;
+    will-change: transform, opacity;
+}
+
+.fe-nav-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(3.5rem) !important;
+    pointer-events: none !important;
+}
+
+.fe-nav-visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+}
+
+.fe-nav-item.active {
+    background-color: var(--fe-anggur);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(110, 28, 39, 0.3);
+}
+
+/* Custom Scrollbar for Panel */
+.fe-right-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fe-right-panel::-webkit-scrollbar-track {
+    background: rgba(244, 214, 205, 0.3);
+}
+
+.fe-right-panel::-webkit-scrollbar-thumb {
+    background: var(--fe-anggur-light);
+    border-radius: 9999px;
+}
+
+.fe-right-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--fe-anggur);
+}
+
+/* Canvas Petals Fullscreen Overlay */
+#fe-petals-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 35;
+}
+
+/* Slow Zoom & Crossfade for Left Desktop Hero */
+@keyframes feSlowZoom {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fe-hero-zoom {
+    animation: feSlowZoom 22s ease-in-out infinite;
+}
+
+/* Toast Notification Animation */
+@keyframes feToastSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fe-toast-show {
+    animation: feToastSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ================= RESPONSIVE LAYOUT SYSTEM ================= */
+
+/* MOBILE FIRST (< 900px) */
+@media (max-width: 899px) {
+    /* 1. Sembunyikan left-hero-container sepenuhnya di mobile (gambar 1) */
+    #left-hero-container {
+        display: none !important;
+    }
+
+    .fe-split-layout {
+        display: block;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .fe-panel-scroll {
+        width: 100%;
+        max-width: 580px;
+        margin: 0 auto;
+        min-height: 100vh;
+        overflow-y: visible;
+        padding-bottom: 6rem;
+    }
+
+    #fe-bottom-navbar {
+        position: fixed !important;
+        bottom: 1.25rem !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: -moz-fit-content !important;
+        width: fit-content !important;
+        max-width: calc(100vw - 2rem) !important;
+        translate: none !important;
+    }
+}
+
+/* DESKTOP SPLIT-SCREEN (>= 900px) */
+@media (min-width: 900px) {
+    .fe-split-layout {
+        display: flex;
+        flex-direction: row;
+        width: 100vw;
+        height: 100vh !important;
+        max-height: 100vh;
+        overflow: hidden;
+    }
+
+    /* 2. Di desktop: Hero kiri full-bleed 100vh penuh dari atas sampai ke bawah layar (gambar 2) */
+    #left-hero-container {
+        display: flex !important;
+        flex: 1 1 0%;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-height: 100vh;
+        position: sticky;
+        top: 0;
+        bottom: 0;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+    }
+
+    #left-hero-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* Panel kanan scroll sendiri */
+    .fe-panel-scroll {
+        width: var(--fe-panel-desktop-width);
+        max-width: var(--fe-panel-desktop-width);
+        height: 100vh !important;
+        max-height: 100vh;
+        overflow-y: auto;
+        flex-shrink: 0;
+        padding-bottom: 7rem;
+    }
+
+    /* Di desktop: Navbar tepat di tengah-tengah panel undangan kanan */
+    #fe-bottom-navbar {
+        position: fixed !important;
+        bottom: 1.5rem !important;
+        left: calc(100vw - var(--fe-panel-desktop-width)) !important;
+        right: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: -moz-fit-content !important;
+        width: fit-content !important;
+        translate: none !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    :root {
+        --fe-panel-desktop-width: 520px;
+    }
+}
+
+@media (min-width: 1440px) {
+    :root {
+        --fe-panel-desktop-width: 560px;
+    }
+}
+
+/* Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

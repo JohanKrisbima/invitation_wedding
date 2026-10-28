@@ -32,6 +32,12 @@ export default defineConfig({
                 bunny('Cormorant Garamond', {
                     weights: [400, 500, 600, 700],
                 }),
+                bunny('Playfair Display', {
+                    weights: [400, 500, 600, 700],
+                }),
+                bunny('Pinyon Script', {
+                    weights: [400],
+                }),
             ],
         }),
         tailwindcss(),

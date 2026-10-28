@@ -8,12 +8,13 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\InvitationController as PublicInvitationController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:10,1');
 });
 
 // Logout Route
@@ -71,3 +72,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
 // Public Landing Page (Lumina Invites)
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Public Digital Invitation Dynamic Routes (Multi-Template)
+Route::get('/{slug}', [PublicInvitationController::class, 'show'])->name('invitation.show');
+Route::post('/{slug}/rsvp', [PublicInvitationController::class, 'storeRsvp'])->name('invitation.rsvp');
+Route::post('/{slug}/messages', [PublicInvitationController::class, 'storeMessage'])->name('invitation.messages');
